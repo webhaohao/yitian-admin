@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-01-08 18:31:03
+ * @LastEditTime: 2020-01-08 18:56:21
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \xianxiapai-admin\src\lang\index.js
+ */
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import Cookies from 'js-cookie'
@@ -28,7 +36,7 @@ const messages = {
 const i18n = new VueI18n({
   // set locale
   // options: en | zh | es
-  locale: Cookies.get('language') || 'en',
+  locale: Cookies.get('language') || 'zh',
   // set locale messages
   messages
 })

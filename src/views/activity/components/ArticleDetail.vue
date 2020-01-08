@@ -26,17 +26,17 @@
             <div class="postInfo-container">
               <el-row>
                 <el-form-item label="活动时间">
-                  <el-col :span="4">
-                    <el-date-picker v-model="postForm.display_time" type="datetime" placeholder="选择日期" style="width: 100%;"/>
+                  <el-col :span="6">
+                    <el-date-picker v-model="postForm.start_time" type="datetime" placeholder="选择日期" style="width: 100%;" format="yyyy-MM-dd HH:mm"/>
                   </el-col>
                   <el-col :span="1" class="line" style="text-align:center">-</el-col>
-                  <el-col :span="4">
-                    <el-date-picker v-model="postForm.display_time" type="datetime" placeholder="选择时间" style="width: 100%;"/>
+                  <el-col :span="6">
+                    <el-date-picker v-model="postForm.end_time" type="datetime" placeholder="选择时间" style="width: 100%;" format="yyyy-MM-dd HH:mm"/>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="活动人数">
                   <el-col :span="4">
-                    <el-input/>
+                    <el-input v-model="postForm.number"/>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="活动类型" prop="category">
@@ -50,10 +50,10 @@
           </el-col>
         </el-row>
 
-        <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
+        <!-- <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
           <el-input :rows="1" v-model="postForm.content_short" type="textarea" class="article-textarea" autosize placeholder="请输入内容"/>
           <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}字</span>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-form-item prop="content" style="margin-bottom: 30px;" label="活动详情:">
           <el-col :span="24">
@@ -84,11 +84,13 @@ import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown
 const defaultForm = {
   status: 'draft',
   title: '', // 文章题目
-  content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
+  detail: '', // 文章内容
+  // content_short: '', // 文章摘要
+  //  source_uri: '', // 文章外链
   image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
+  start_time: undefined, // 前台展示时间
+  end_time: undefined,
+  number: '',
   id: undefined,
   category: [],
   platforms: ['a-platform'],

@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2020-01-08 18:31:04
+ * @LastEditTime: 2020-01-08 18:49:48
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \xianxiapai-admin\src\store\modules\app.js
+ */
 import Cookies from 'js-cookie'
 
 const app = {
@@ -7,7 +15,7 @@ const app = {
       withoutAnimation: false
     },
     device: 'desktop',
-    language: Cookies.get('language') || 'en',
+    language: Cookies.get('language') || 'zh',
     size: Cookies.get('size') || 'medium'
   },
   mutations: {
