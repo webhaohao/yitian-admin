@@ -22,7 +22,11 @@
                 标题
               </MDinput>
             </el-form-item>
-
+            <el-form-item prop="image_uri" style="margin-bottom: 30px;" label="上传活动封面图片">
+              <el-col :span="24">
+                <Upload v-model="postForm.image_uri" />
+              </el-col>
+            </el-form-item>
             <div class="postInfo-container">
               <el-row>
                 <el-form-item label="活动时间">
@@ -59,10 +63,6 @@
           <el-col :span="24">
             <Tinymce ref="editor" :height="400" v-model="postForm.content" />
           </el-col>
-        </el-form-item>
-
-        <el-form-item prop="image_uri" style="margin-bottom: 30px;">
-          <Upload v-model="postForm.image_uri" />
         </el-form-item>
       </div>
     </el-form>
