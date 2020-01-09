@@ -48,11 +48,10 @@ const user = {
     LoginByUsername({ commit }, userInfo) {
       const username = userInfo.username.trim()
       return new Promise((resolve, reject) => {
-        loginByUsername(username, userInfo.password).then(response => {
-          const data = response.data
-          console.log(data)
+        loginByUsername(username, userInfo.password).then(data => {
+          console.log('token', data)
           commit('SET_TOKEN', data.token)
-          setToken(response.data.token)
+          setToken(data.token)
           resolve()
         }).catch(error => {
           reject(error)
@@ -63,22 +62,26 @@ const user = {
     // 获取用户信息
     GetUserInfo({ commit, state }) {
       return new Promise((resolve, reject) => {
-        getUserInfo(state.token).then(response => {
-          if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
-            reject('error')
-          }
-          const data = response.data
-
+        getUserInfo(state.token).then(data => {
+          // if (!response.data) { // 由于mockjs 不支持自定义状态码只能这样hack
+          //   reject('error')
+          // }
           if (data.roles && data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
             commit('SET_ROLES', data.roles)
           } else {
             reject('getInfo: roles must be a non-null array !')
           }
-
-          commit('SET_NAME', data.name)
-          commit('SET_AVATAR', data.avatar)
-          commit('SET_INTRODUCTION', data.introduction)
-          resolve(response)
+          const info = {
+            roles: ['admin'],
+            token: 'admin',
+            introduction: '我是超级管理员',
+            avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+            name: 'Super Admin'
+          }
+          commit('SET_NAME', info.name)
+          commit('SET_AVATAR', info.avatar)
+          commit('SET_INTRODUCTION', info.introduction)
+          resolve(data)
         }).catch(error => {
           reject(error)
         })

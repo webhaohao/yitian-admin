@@ -49,7 +49,7 @@ export default {
     customTreeTable: '自定义树表',
     tab: 'Tab',
     form: '表单',
-    createArticle: '创建文章',
+    createArticle: '发布文章',
     editArticle: '编辑文章',
     articleList: '文章列表',
     errorPages: '错误页面',

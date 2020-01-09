@@ -24,7 +24,7 @@
             </el-form-item>
             <el-form-item prop="image_uri" style="margin-bottom: 30px;" label="上传活动封面图片">
               <el-col :span="24">
-                <Upload v-model="postForm.image_uri" />
+                <Upload v-model="postForm.main_img_url" @input="uploadImage"/>
               </el-col>
             </el-form-item>
             <div class="postInfo-container">
@@ -43,10 +43,14 @@
                     <el-input v-model="postForm.number"/>
                   </el-col>
                 </el-form-item>
-                <el-form-item label="活动类型" prop="category">
-                  <el-select placeholder="请选择活动类型">
-                    <el-option label="区域一" value="shanghai"/>
-                    <el-option label="区域二" value="beijing"/>
+                <el-form-item label="活动地点">
+                  <el-col :span="4">
+                    <el-input v-model="postForm.location"/>
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="活动类型">
+                  <el-select v-model="postForm.category_id" placeholder="请选择活动类型" >
+                    <el-option v-for="(item,index) in categories" :key="index" :label="item.name" :value="item.id"/>
                   </el-select>
                 </el-form-item>
               </el-row>
@@ -59,9 +63,9 @@
           <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}字</span>
         </el-form-item> -->
 
-        <el-form-item prop="content" style="margin-bottom: 30px;" label="活动详情:">
+        <el-form-item prop="detail" style="margin-bottom: 30px;" label="活动详情:">
           <el-col :span="24">
-            <Tinymce ref="editor" :height="400" v-model="postForm.content" />
+            <Tinymce ref="editor" :height="400" v-model="postForm.detail" />
           </el-col>
         </el-form-item>
       </div>
@@ -76,7 +80,9 @@ import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
+import { parseTime } from '@/utils'
 import { fetchArticle } from '@/api/article'
+import { getCatories, createActivity } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -87,15 +93,13 @@ const defaultForm = {
   detail: '', // 文章内容
   // content_short: '', // 文章摘要
   //  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
+  main_img_url: '', // 文章图片
   start_time: undefined, // 前台展示时间
   end_time: undefined,
+  location: '', // 地点
   number: '',
-  id: undefined,
-  category: [],
-  platforms: ['a-platform'],
-  comment_disabled: false,
-  importance: 0
+  category_id: '',
+  platforms: ['a-platform']
 }
 
 export default {
@@ -144,7 +148,10 @@ export default {
         content: [{ validator: validateRequire }],
         source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
       },
-      tempRoute: {}
+      tempRoute: {},
+      categories: [
+
+      ]
     }
   },
   computed: {
@@ -162,13 +169,21 @@ export default {
     } else {
       this.postForm = Object.assign({}, defaultForm)
     }
-
+    this.getCatories()
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
+    async getCatories() {
+      this.categories = await getCatories()
+    },
+    uploadImage(file) {
+      // console.log(file)
+      this.postForm.main_img_url = file.url
+      console.log(this.postForm.main_img_url)
+    },
     fetchData(id) {
       fetchArticle(id).then(response => {
         this.postForm = response.data
@@ -188,19 +203,23 @@ export default {
       this.$store.dispatch('updateVisitedView', route)
     },
     submitForm() {
-      this.postForm.display_time = parseInt(this.display_time / 1000)
+      this.postForm.start_time = parseTime(this.postForm.start_time, '{y}-{m}-{d} {h}:{i}')
+      this.postForm.end_time = parseTime(this.postForm.end_time, '{y}-{m}-{d} {h}:{i}')
       console.log(this.postForm)
-      this.$refs.postForm.validate(valid => {
+      this.$refs.postForm.validate(async(valid) => {
         if (valid) {
+          const result = await createActivity(this.postForm)
+          console.log(result)
           this.loading = true
           this.$notify({
             title: '成功',
-            message: '发布文章成功',
+            message: '发布活动成功',
             type: 'success',
             duration: 2000
           })
           this.postForm.status = 'published'
           this.loading = false
+          console.log(this.postForm)
         } else {
           console.log('error submit!!')
           return false

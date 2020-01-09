@@ -5,28 +5,29 @@
       :multiple="false"
       :show-file-list="false"
       :on-success="handleImageSuccess"
+      :action="uploadUrl"
       class="image-uploader"
-      drag
-      action="https://httpbin.org/post">
+      name="files"
+      drag>
       <i class="el-icon-upload"/>
       <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
     </el-upload>
     <div class="image-preview image-app-preview">
-      <div v-show="imageUrl.length>1" class="image-preview-wrapper">
+      <div v-show="imageUrl" class="image-preview-wrapper">
         <img :src="imageUrl">
         <div class="image-preview-action">
           <i class="el-icon-delete" @click="rmImage"/>
         </div>
       </div>
     </div>
-    <div class="image-preview">
-      <div v-show="imageUrl.length>1" class="image-preview-wrapper">
+    <!-- <div class="image-preview">
+      <div v-show="imageUrl" class="image-preview-wrapper">
         <img :src="imageUrl">
         <div class="image-preview-action">
           <i class="el-icon-delete" @click="rmImage"/>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -50,6 +51,9 @@ export default {
   computed: {
     imageUrl() {
       return this.value
+    },
+    uploadUrl() {
+      return `${process.env.BASE_API}/activity/upload_image`
     }
   },
   methods: {
@@ -60,7 +64,8 @@ export default {
       this.$emit('input', val)
     },
     handleImageSuccess(file) {
-      this.emitInput(file.files.file)
+      // console.log(file);
+      this.emitInput(file)
     },
     beforeUpload() {
       const _self = this
