@@ -3,43 +3,55 @@
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
 
       <sticky :class-name="'sub-navbar '+postForm.status">
-        <CommentDropdown v-model="postForm.comment_disabled" />
+        <!-- <CommentDropdown v-model="postForm.comment_disabled" />
         <PlatformDropdown v-model="postForm.platforms" />
-        <SourceUrlDropdown v-model="postForm.source_uri" />
+        <SourceUrlDropdown v-model="postForm.source_uri" /> -->
         <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">发布
         </el-button>
-        <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button>
+        <!-- <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button> -->
       </sticky>
 
       <div class="createPost-main-container">
         <el-row>
 
-          <Warning />
+          <!-- <Warning /> -->
 
           <el-col :span="24">
             <el-form-item style="margin-bottom: 40px;" prop="title">
               <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
-                标题
+                新闻标题
               </MDinput>
             </el-form-item>
-
+            <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
+              <el-input :rows="1" v-model="postForm.abstract" type="textarea" class="article-textarea" autosize placeholder="请输入内容"/>
+              <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}字</span>
+            </el-form-item>
+            <el-form-item label="活动类型">
+              <el-select v-model="postForm.category_id" placeholder="请选择活动类型" >
+                <el-option v-for="(item,index) in categories" :key="index" :label="item.name" :value="item.id"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item prop="image_uri" style="margin-bottom: 30px;" label="上传活动封面图片">
+              <el-col :span="24">
+                <Upload v-model="postForm.main_img_url" @input="uploadImage"/>
+              </el-col>
+            </el-form-item>
             <div class="postInfo-container">
               <el-row>
-                <el-col :span="8">
+                <!-- <el-col :span="8">
                   <el-form-item label-width="45px" label="作者:" class="postInfo-container-item">
                     <el-select v-model="postForm.author" :remote-method="getRemoteUserList" filterable remote placeholder="搜索用户">
                       <el-option v-for="(item,index) in userListOptions" :key="item+index" :label="item" :value="item"/>
                     </el-select>
                   </el-form-item>
-                </el-col>
+                </el-col> -->
 
-                <el-col :span="10">
+                <!-- <el-col :span="10">
                   <el-form-item label-width="80px" label="发布时间:" class="postInfo-container-item">
                     <el-date-picker v-model="postForm.display_time" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="选择日期时间"/>
                   </el-form-item>
-                </el-col>
-
-                <el-col :span="6">
+                </el-col> -->
+                <!-- <el-col :span="6">
                   <el-form-item label-width="60px" label="重要性:" class="postInfo-container-item">
                     <el-rate
                       v-model="postForm.importance"
@@ -49,23 +61,13 @@
                       :high-threshold="3"
                       style="margin-top:8px;"/>
                   </el-form-item>
-                </el-col>
+                </el-col> -->
               </el-row>
             </div>
           </el-col>
         </el-row>
-
-        <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
-          <el-input :rows="1" v-model="postForm.content_short" type="textarea" class="article-textarea" autosize placeholder="请输入内容"/>
-          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}字</span>
-        </el-form-item>
-
-        <el-form-item prop="content" style="margin-bottom: 30px;">
-          <Tinymce ref="editor" :height="400" v-model="postForm.content" />
-        </el-form-item>
-
-        <el-form-item prop="image_uri" style="margin-bottom: 30px;">
-          <Upload v-model="postForm.image_uri" />
+        <el-form-item prop="detail" style="margin-bottom: 30px;">
+          <Tinymce ref="editor" :height="400" v-model="postForm.detail" />
         </el-form-item>
       </div>
     </el-form>
@@ -80,6 +82,7 @@ import MDinput from '@/components/MDinput'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
 import { fetchArticle } from '@/api/article'
+import { getNewsCategory, createNews } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -87,15 +90,11 @@ import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown
 const defaultForm = {
   status: 'draft',
   title: '', // 文章题目
-  content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
-  id: undefined,
+  detail: '', // 文章内容
+  abstract: '', // 文章摘要
+  main_img_url: '', // 文章图片
   platforms: ['a-platform'],
-  comment_disabled: false,
-  importance: 0
+  comment_disabled: false
 }
 
 export default {
@@ -144,12 +143,13 @@ export default {
         content: [{ validator: validateRequire }],
         source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
       },
-      tempRoute: {}
+      tempRoute: {},
+      categories: []
     }
   },
   computed: {
     contentShortLength() {
-      return this.postForm.content_short.length
+      return this.postForm.abstract.length
     },
     lang() {
       return this.$store.getters.language
@@ -162,7 +162,7 @@ export default {
     } else {
       this.postForm = Object.assign({}, defaultForm)
     }
-
+    this.getCatories()
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
@@ -182,17 +182,26 @@ export default {
         console.log(err)
       })
     },
+    async getCatories() {
+      this.categories = await getNewsCategory()
+    },
     setTagsViewTitle() {
       const title = this.lang === 'zh' ? '编辑文章' : 'Edit Article'
       const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       this.$store.dispatch('updateVisitedView', route)
     },
+    uploadImage(file) {
+      // console.log(file)
+      this.postForm.main_img_url = file.url
+      console.log(this.postForm.main_img_url)
+    },
     submitForm() {
-      this.postForm.display_time = parseInt(this.display_time / 1000)
+      // this.postForm.display_time = parseInt(this.display_time / 1000)
       console.log(this.postForm)
-      this.$refs.postForm.validate(valid => {
+      this.$refs.postForm.validate(async(valid) => {
         if (valid) {
           this.loading = true
+          await createNews(this.postForm)
           this.$notify({
             title: '成功',
             message: '发布文章成功',

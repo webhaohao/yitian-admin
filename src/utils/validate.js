@@ -1,9 +1,17 @@
+/*
+ * @Author: your name
+ * @Date: 2020-01-08 18:31:04
+ * @LastEditTime: 2020-01-10 09:01:30
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \xianxiapai-admin\src\utils\validate.js
+ */
 /**
  * Created by jiachenpan on 16/11/18.
  */
 
 export function isvalidUsername(str) {
-  const valid_map = ['admin', 'editor', 'starcraft']
+  const valid_map = ['admin', 'editor', 'starcraft', 'xianxiapai']
   return valid_map.indexOf(str.trim()) >= 0
 }
 
