@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-01-09 14:09:21
- * @LastEditTime : 2020-01-10 10:52:49
+ * @LastEditTime : 2020-01-13 13:36:39
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \xianxiapai-admin\src\api\common.js
@@ -34,5 +34,20 @@ export function createNews(data) {
     url: '/create_news',
     method: 'post',
     data
+  })
+}
+
+export function createOrUpdateAbout(data) {
+  return request({
+    url: '/about/createOrUpdate',
+    method: 'post',
+    data
+  })
+}
+
+export function getAbout() {
+  return request({
+    url: '/about/get',
+    method: 'get'
   })
 }

@@ -155,6 +155,18 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/about',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/about/index'),
+        name: 'About',
+        meta: { title: 'about', icon: 'icon', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/icon',
     component: Layout,
     children: [
