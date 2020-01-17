@@ -15,7 +15,9 @@
         <el-row>
 
           <!-- <Warning /> -->
-
+          <el-radio-group v-model="postForm.activity_type_id">
+            <el-radio v-for="(item,index) in activityType" :key="index" :label="item.id">{{ item.name }}</el-radio>
+          </el-radio-group>
           <el-col :span="24">
             <el-form-item style="margin-bottom: 40px;" prop="title">
               <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
@@ -99,6 +101,7 @@ const defaultForm = {
   location: '', // 地点
   number: '',
   category_id: '',
+  activity_type_id: 0,
   platforms: ['a-platform']
 }
 
@@ -182,6 +185,9 @@ export default {
     },
     async getActivityTypeByAdmin() {
       this.activityType = await getActivityTypeByAdmin()
+      if (this.activityType.length) {
+        this.postForm.activity_type_id = this.activityType[0].id
+      }
     },
     uploadImage(file) {
       // console.log(file)

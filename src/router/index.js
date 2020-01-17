@@ -129,18 +129,18 @@ export const asyncRouterMap = [
       }
     ]
   },
-  // {
-  //   path: '/homeActivityType',
-  //   component: Layout,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/homeActivityType/index'),
-  //       name: 'homeActivityTypeList',
-  //       meta: { title: 'homeActivityType', icon: 'icon', noCache: true }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/category',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/category/index'),
+        name: 'category',
+        meta: { title: 'category', icon: 'icon', noCache: true }
+      }
+    ]
+  },
   {
     path: '/activity',
     component: Layout,

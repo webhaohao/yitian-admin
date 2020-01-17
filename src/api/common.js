@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-01-09 14:09:21
- * @LastEditTime : 2020-01-17 16:30:22
+ * @LastEditTime : 2020-01-17 19:59:25
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \xianxiapai-admin\src\api\common.js
@@ -62,6 +62,13 @@ export function getActivityTypeAll() {
 export function getActivityTypeByAdmin() {
   return request({
     url: '/activityType/admin',
+    method: 'get'
+  })
+}
+
+export function getActivityTypeCategory() {
+  return request({
+    url: '/activityType/category',
     method: 'get'
   })
 }

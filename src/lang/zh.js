@@ -67,7 +67,7 @@ export default {
     i18n: '国际化',
     externalLink: '外链',
     about: '关于我们',
-    homeActivityType: '首页活动'
+    category: '活动类型'
   },
   navbar: {
     logOut: '退出登录',
