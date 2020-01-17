@@ -66,7 +66,8 @@ export default {
     clipboardDemo: 'Clipboard',
     i18n: '国际化',
     externalLink: '外链',
-    about: '关于我们'
+    about: '关于我们',
+    homeActivityType: '首页活动'
   },
   navbar: {
     logOut: '退出登录',

@@ -1,119 +1,59 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-01-08 18:31:04
+ * @LastEditTime : 2020-01-17 14:22:47
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \xianxiapai-admin\src\views\activity\list.vue
+ -->
 <template>
-  <div class="app-container">
-
-    <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
-        <template slot-scope="scope">
-          <span>{{ scope.row.id }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="180px" align="center" label="Date">
-        <template slot-scope="scope">
-          <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="120px" align="center" label="Author">
-        <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column width="100px" label="Importance">
-        <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon"/>
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="300px" label="Title">
-        <template slot-scope="scope">
-
-          <router-link :to="'/example/edit/'+scope.row.id" class="link-type">
-            <span>{{ scope.row.title }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="120">
-        <template slot-scope="scope">
-          <router-link :to="'/example/edit/'+scope.row.id">
-            <el-button type="primary" size="small" icon="el-icon-edit">Edit</el-button>
-          </router-link>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
+  <div class="tab-container">
+    <el-tag>mounted times ：{{ createdTimes }}</el-tag>
+    <el-alert :closable="false" style="width:200px;display:inline-block;vertical-align: middle;margin-left:30px;" title="Tab with keep-alive" type="success"/>
+    <el-tabs v-model="activeName" style="margin-top:15px;" type="border-card">
+      <el-tab-pane v-for="item in tabMapOptions" :label="item.name" :key="item.id" :name="item.id">
+        <keep-alive>
+          <tab-pane v-if="activeName==item.id" :type="item.id" @create="showCreatedTimes"/>
+        </keep-alive>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
-import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
-
+import tabPane from './components/tabPane'
+import { getActivityTypeAll } from '@/api/common'
 export default {
-  name: 'ArticleList',
-  components: { Pagination },
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
+  name: 'Tab',
+  components: { tabPane },
   data() {
     return {
-      list: null,
-      total: 0,
-      listLoading: true,
-      listQuery: {
-        page: 1,
-        limit: 20
-      }
+      tabMapOptions: [
+        { label: 'China', key: 'CN' },
+        { label: 'USA', key: 'US' },
+        { label: 'Japan', key: 'JP' },
+        { label: 'Eurozone', key: 'EU' }
+      ],
+      activeName: 0,
+      createdTimes: 0
     }
   },
-  created() {
-    this.getList()
+  async created() {
+    this.tabMapOptions = await getActivityTypeAll()
+    if (this.tabMapOptions.length) {
+      this.activeName = this.tabMapOptions[0].id
+    }
   },
   methods: {
-    getList() {
-      this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-        this.listLoading = false
-      })
-    },
-    handleSizeChange(val) {
-      this.listQuery.limit = val
-      this.getList()
-    },
-    handleCurrentChange(val) {
-      this.listQuery.page = val
-      this.getList()
+    showCreatedTimes() {
+      this.createdTimes = this.createdTimes + 1
     }
   }
 }
 </script>
 
 <style scoped>
-.edit-input {
-  padding-right: 100px;
-}
-.cancel-btn {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-}
+  .tab-container{
+    margin: 30px;
+  }
 </style>

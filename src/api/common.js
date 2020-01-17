@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-01-09 14:09:21
- * @LastEditTime : 2020-01-13 13:36:39
+ * @LastEditTime : 2020-01-17 16:30:22
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \xianxiapai-admin\src\api\common.js
@@ -48,6 +48,20 @@ export function createOrUpdateAbout(data) {
 export function getAbout() {
   return request({
     url: '/about/get',
+    method: 'get'
+  })
+}
+
+export function getActivityTypeAll() {
+  return request({
+    url: '/activityType/all',
+    method: 'get'
+  })
+}
+
+export function getActivityTypeByAdmin() {
+  return request({
+    url: '/activityType/admin',
     method: 'get'
   })
 }

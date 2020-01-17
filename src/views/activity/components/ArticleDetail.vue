@@ -82,7 +82,7 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
 import { parseTime } from '@/utils'
 import { fetchArticle } from '@/api/article'
-import { getCatories, createActivity } from '@/api/common'
+import { getCatories, createActivity, getActivityTypeByAdmin } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -170,6 +170,7 @@ export default {
       this.postForm = Object.assign({}, defaultForm)
     }
     this.getCatories()
+    this.getActivityTypeByAdmin()
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
@@ -178,6 +179,9 @@ export default {
   methods: {
     async getCatories() {
       this.categories = await getCatories()
+    },
+    async getActivityTypeByAdmin() {
+      this.activityType = await getActivityTypeByAdmin()
     },
     uploadImage(file) {
       // console.log(file)
