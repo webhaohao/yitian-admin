@@ -22,6 +22,21 @@ export function getNewsCategory() {
   })
 }
 
+export function removeNewsCategory(id) {
+  return request({
+    url: `/newsCategory/remove/${id}`,
+    method: 'get'
+  })
+}
+
+export function createNewsCategory(data) {
+  return request({
+    url: '/newsCategory/create',
+    method: 'post',
+    data
+  })
+}
+
 export function createActivity(data) {
   return request({
     url: '/create_activity',

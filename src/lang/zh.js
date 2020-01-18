@@ -32,6 +32,7 @@ export default {
     lineChart: '折线图',
     mixChart: '混合图表',
     news: '新鲜',
+    newCategory: '新鲜类型',
     nested: '路由嵌套',
     menu1: '菜单1',
     'menu1-1': '菜单1-1',

@@ -196,7 +196,18 @@ export const asyncRouterMap = [
   // chartsRouter,
   // nestedRouter,
   // tableRouter,
-
+  {
+    path: '/newCategory',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/new-category/index'),
+        name: 'newCategory',
+        meta: { title: 'newCategory', icon: 'icon', noCache: true }
+      }
+    ]
+  },
   {
     path: '/news',
     component: Layout,

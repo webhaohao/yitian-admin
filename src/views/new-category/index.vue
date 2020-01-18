@@ -11,31 +11,31 @@
   <div class="container">
     <template>
       <el-row :gutter="12">
-        <el-col v-for="(item,index) in activityTypeInfo " :span="8" :key="index">
+        <el-col>
           <el-card shadow="always">
             <div slot="header" class="clearfix">
-              <span>{{ item.name }}</span>
+              <span>新鲜类型</span>
             </div>
             <el-row>
-              <el-col v-for="(tag,i) in item.items" :key="i" :span="8">
+              <el-col v-for="(item,index) in newsCategories" :key="index" :span="8">
                 <el-tag
                   :disable-transitions="false"
                   closable
-                  @close="handleClose(tag,index)">
-                  {{ tag.name }}
+                  @close="handleClose(item,index)">
+                  {{ item.name }}
                 </el-tag>
               </el-col>
             </el-row>
             <el-input
-              v-if="item.inputVisible"
+              v-if="inputVisible"
               ref="saveTagInput"
               v-model="inputValue"
               class="input-new-tag"
               size="small"
-              @keyup.enter.native="handleInputConfirm(index)"
-              @blur="handleInputConfirm(index)"
+              @keyup.enter.native="handleInputConfirm"
+              @blur="handleInputConfirm"
             />
-            <el-button v-else class="button-new-tag" size="small" @click="showInput(item,index)">+ Add</el-button>
+            <el-button v-else class="button-new-tag" size="small" @click="showInput">+ Add</el-button>
           </el-card>
         </el-col>
       </el-row>
@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { getActivityTypeCategory, createCategory, removeCategory } from '@/api/common'
+import { getNewsCategory, createNewsCategory, removeNewsCategory } from '@/api/common'
 export default {
 
   components: {},
@@ -54,7 +54,7 @@ export default {
       dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
       inputValue: '',
-      activityTypeInfo: [
+      newsCategories: [
       ]
     }
   },
@@ -62,12 +62,8 @@ export default {
   computed: {
   },
   async created() {
-    this.activityTypeInfo = await getActivityTypeCategory()
-    this.activityTypeInfo.map(item => {
-      item.inputVisible = false
-      return item
-    })
-    console.log(this.activityTypeInfo)
+    this.newsCategories = await getNewsCategory()
+    console.log(this.newsCategories)
   },
   mounted() {},
 
@@ -76,33 +72,27 @@ export default {
       console.log(index, row)
     },
     async handleClose(tag, index) {
-      console.log(tag)
-      await removeCategory(tag.id)
-      console.log(this.activityTypeInfo[index].items.indexOf(tag))
-      this.activityTypeInfo[index].items.splice(this.activityTypeInfo[index].items.findIndex(item => item.name === tag.name), 1)
+      await removeNewsCategory(tag.id)
+      this.newsCategories.splice(this.newsCategories.findIndex(item => item.name === tag.name), 1)
     },
 
     showInput(item, index) {
-      item.inputVisible = true
-      this.$set(this.activityTypeInfo, index, item)
+      this.inputVisible = true
       this.$nextTick(_ => {
-        console.log(this.$refs.saveTagInput[0])
-        this.$refs.saveTagInput[0].$refs.input.focus()
+        this.$refs.saveTagInput.$refs.input.focus()
       })
     },
 
     async handleInputConfirm(index) {
       const inputValue = this.inputValue
       if (inputValue) {
-        const _index = this.activityTypeInfo[index].items.findIndex(item => item.name === inputValue)
+        const _index = this.newsCategories.findIndex(item => item.name === inputValue)
         if (_index !== -1) {
           this.$message.error('错了哦，您输入的已存在！')
           return false
         } else {
-          await createCategory({ name: inputValue, activity_type_id: this.activityTypeInfo[index].id })
-          this.activityTypeInfo = await getActivityTypeCategory()
-          // this.activityTypeInfo[index].items.push({ name: inputValue })
-          console.log(this.activityTypeInfo)
+          await createNewsCategory({ name: inputValue })
+          this.newsCategories = await getNewsCategory()
         }
       }
       this.inputVisible = false
