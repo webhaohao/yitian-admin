@@ -15,7 +15,7 @@
         <el-row>
 
           <!-- <Warning /> -->
-          <el-radio-group v-model="postForm.activity_type_id">
+          <el-radio-group v-model="postForm.activity_type_id" @change="activityTypeChange">
             <el-radio v-for="(item,index) in activityType" :key="index" :label="item.id">{{ item.name }}</el-radio>
           </el-radio-group>
           <el-col :span="24">
@@ -84,7 +84,7 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
 import { parseTime } from '@/utils'
 import { fetchArticle } from '@/api/article'
-import { getCatories, createActivity, getActivityTypeByAdmin } from '@/api/common'
+import { createActivity, getActivityTypeByAdmin, getCategoryByActivityTypeId } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -154,7 +154,8 @@ export default {
       tempRoute: {},
       categories: [
 
-      ]
+      ],
+      activityType: []
     }
   },
   computed: {
@@ -172,7 +173,6 @@ export default {
     } else {
       this.postForm = Object.assign({}, defaultForm)
     }
-    this.getCatories()
     this.getActivityTypeByAdmin()
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
@@ -180,14 +180,19 @@ export default {
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
-    async getCatories() {
-      this.categories = await getCatories()
+    async getCatories(activityTypeId) {
+      this.categories = await getCategoryByActivityTypeId({ activityTypeId })
     },
     async getActivityTypeByAdmin() {
       this.activityType = await getActivityTypeByAdmin()
       if (this.activityType.length) {
         this.postForm.activity_type_id = this.activityType[0].id
+        this.getCatories(this.postForm.activity_type_id)
       }
+    },
+    async activityTypeChange(value) {
+      console.log(value)
+      this.getCatories(value)
     },
     uploadImage(file) {
       // console.log(file)

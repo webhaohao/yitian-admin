@@ -72,3 +72,49 @@ export function getActivityTypeCategory() {
     method: 'get'
   })
 }
+
+export function createCategory(data) {
+  return request({
+    url: '/category/create',
+    method: 'post',
+    data
+  })
+}
+
+export function removeCategory(id) {
+  return request({
+    url: `/category/remove/${id}`,
+    method: 'get'
+  })
+}
+
+export function getCategoryByActivityTypeId(params) {
+  return request({
+    url: '/category/byActivityTypeId',
+    method: 'get',
+    params
+  })
+}
+
+export function getActivitesByActivityTypeId(params) {
+  return request({
+    url: '/activity/byActivityType',
+    method: 'get',
+    params
+  })
+}
+
+export function getActivityDetailById(id) {
+  return request({
+    url: `/activity/detail/${id}`,
+    method: 'get'
+  })
+}
+
+export function createBanner(data) {
+  return request({
+    url: `/banner/createBanner`,
+    method: 'post',
+    data
+  })
+}
