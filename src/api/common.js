@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-01-09 14:09:21
- * @LastEditTime : 2020-01-17 19:59:25
+ * @LastEditTime : 2020-01-19 10:19:46
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \xianxiapai-admin\src\api\common.js
@@ -131,5 +131,13 @@ export function createBanner(data) {
     url: `/banner/createBanner`,
     method: 'post',
     data
+  })
+}
+
+export function getNewsDetailByCategoryId(params) {
+  return request({
+    url: '/news/detail_by_CategoryId',
+    method: 'get',
+    params
   })
 }

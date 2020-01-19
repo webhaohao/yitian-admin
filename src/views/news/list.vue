@@ -1,62 +1,59 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-01-08 18:31:04
+ * @LastEditTime : 2020-01-19 13:49:42
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \xianxiapai-admin\src\views\news\list.vue
+ -->
 <template>
   <div class="app-container">
 
     <el-table v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%">
-      <el-table-column align="center" label="ID" width="80">
+      <el-table-column align="center" label="id" width="80">
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="180px" align="center" label="Date">
+      <!-- <el-table-column width="180px" align="center" label="Date">
         <template slot-scope="scope">
           <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
-      </el-table-column>
-
-      <el-table-column width="120px" align="center" label="Author">
+      </el-table-column> -->
+      <el-table-column min-width="300px" label="标题">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.title }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column width="100px" label="Importance">
+      <el-table-column align="center" label="操作" width="120">
         <template slot-scope="scope">
-          <svg-icon v-for="n in +scope.row.importance" :key="n" icon-class="star" class="meta-item__icon"/>
-        </template>
-      </el-table-column>
-
-      <el-table-column class-name="status-col" label="Status" width="110">
-        <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
-        </template>
-      </el-table-column>
-
-      <el-table-column min-width="300px" label="Title">
-        <template slot-scope="scope">
-
-          <router-link :to="'/example/edit/'+scope.row.id" class="link-type">
-            <span>{{ scope.row.title }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column align="center" label="Actions" width="120">
-        <template slot-scope="scope">
-          <router-link :to="'/example/edit/'+scope.row.id">
-            <el-button type="primary" size="small" icon="el-icon-edit">Edit</el-button>
-          </router-link>
+          <!-- <router-link :to="'/example/edit/'+scope.row.id"> -->
+          <el-button type="primary" size="small" icon="el-icon-edit" @click="handleClick(scope.row)">操作</el-button>
+          <!-- </router-link> -->
         </template>
       </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
-
+    <el-dialog :visible.sync="dialogFormVisible" title="新鲜详情">
+      <div class="demo-image__placeholder">
+        <div class="block">
+          <span>封面图片</span>
+          <img :src="detail.main_img_url" alt="">
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setTopBanner">置顶banner图</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/article'
+import { getNewsDetailByCategoryId } from '@/api/common'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
@@ -80,6 +77,10 @@ export default {
       listQuery: {
         page: 1,
         limit: 20
+      },
+      dialogFormVisible: false,
+      detail: {
+
       }
     }
   },
@@ -87,21 +88,30 @@ export default {
     this.getList()
   },
   methods: {
-    getList() {
+    async getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
-        this.listLoading = false
-      })
+      const result = await getNewsDetailByCategoryId({ id: '', page: 1, size: 10 })
+      this.list = result.data
+      this.listLoading = false
     },
     handleSizeChange(val) {
       this.listQuery.limit = val
       this.getList()
     },
+    async handleClick(row) {
+      this.dialogFormVisible = true
+      this.detail.main_img_url = row.main_img_url
+      this.detail.key_word = row.id
+      // 后期要改 new banner_id 2
+      this.detail.banner_id = 2
+      console.log(row)
+    },
     handleCurrentChange(val) {
       this.listQuery.page = val
       this.getList()
+    },
+    setTopBanner() {
+      console.log('banner')
     }
   }
 }
