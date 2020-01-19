@@ -11,6 +11,7 @@ export default {
     pagePermission: '页面权限',
     directivePermission: '指令权限',
     icons: '图标',
+    userAgreement: '用户协议',
     components: '组件',
     componentIndex: '介绍',
     tinymce: '富文本编辑器',

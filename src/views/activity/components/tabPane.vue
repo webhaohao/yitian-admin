@@ -73,7 +73,8 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setTopBanner">置顶banner图</el-button>
+        <el-button v-if="type=='4'" type="primary" @click="setTopBanner(3)">置顶体育圈banner图</el-button>
+        <el-button type="primary" @click="setTopBanner(1)">置顶banner图</el-button>
       </div>
     </el-dialog>
 
@@ -132,8 +133,8 @@ export default {
       this.dialogFormVisible = true
       console.log(this.detail)
     },
-    async setTopBanner() {
-      const banner_id = 1
+    async setTopBanner(id) {
+      const banner_id = id
       const key_word = this.detail.id
       const url = this.detail.main_img_url
       await createBanner({ banner_id, key_word, url })

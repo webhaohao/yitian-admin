@@ -67,6 +67,21 @@ export function getAbout() {
   })
 }
 
+export function createOrUpdateUserAgreement(data) {
+  return request({
+    url: '/userAgreement/createOrUpdate',
+    method: 'post',
+    data
+  })
+}
+
+export function getUserAgreement() {
+  return request({
+    url: '/userAgreement/get',
+    method: 'get'
+  })
+}
+
 export function getActivityTypeAll() {
   return request({
     url: '/activityType/all',
@@ -133,7 +148,6 @@ export function createBanner(data) {
     data
   })
 }
-
 export function getNewsDetailByCategoryId(params) {
   return request({
     url: '/news/detail_by_CategoryId',

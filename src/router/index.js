@@ -179,6 +179,18 @@ export const asyncRouterMap = [
     ]
   },
   {
+    path: '/agreement',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/user-agreement/index'),
+        name: 'userAgreement',
+        meta: { title: 'userAgreement', icon: 'icon', noCache: true }
+      }
+    ]
+  },
+  {
     path: '/icon',
     component: Layout,
     children: [

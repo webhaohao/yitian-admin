@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { getNewsDetailByCategoryId } from '@/api/common'
+import { getNewsDetailByCategoryId, createBanner } from '@/api/common'
 import Pagination from '@/components/Pagination' // Secondary package based on el-pagination
 
 export default {
@@ -110,8 +110,14 @@ export default {
       this.listQuery.page = val
       this.getList()
     },
-    setTopBanner() {
+    async setTopBanner() {
       console.log('banner')
+      const banner_id = 1
+      const key_word = this.detail.key_word
+      const url = this.detail.main_img_url
+      await createBanner({ banner_id, key_word, url })
+      console.log(this.detail)
+      this.dialogFormVisible = false
     }
   }
 }
