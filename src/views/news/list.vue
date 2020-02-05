@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-01-08 18:31:04
- * @LastEditTime : 2020-01-19 13:49:42
+ * @LastEditTime : 2020-01-23 12:28:10
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \xianxiapai-admin\src\views\news\list.vue
@@ -112,7 +112,7 @@ export default {
     },
     async setTopBanner() {
       console.log('banner')
-      const banner_id = 1
+      const banner_id = 2
       const key_word = this.detail.key_word
       const url = this.detail.main_img_url
       await createBanner({ banner_id, key_word, url })
