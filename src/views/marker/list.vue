@@ -22,7 +22,7 @@
 
 <script>
 import tabPane from './components/tabPane'
-import { getActivityTypeAll } from '@/api/common'
+import { getMarkersType } from '@/api/common'
 export default {
   name: 'Tab',
   components: { tabPane },
@@ -39,7 +39,7 @@ export default {
     }
   },
   async created() {
-    this.tabMapOptions = await getActivityTypeAll()
+    this.tabMapOptions = await getMarkersType()
     if (this.tabMapOptions.length) {
       this.activeName = this.tabMapOptions[0].id
     }

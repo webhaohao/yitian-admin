@@ -142,26 +142,26 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/activity',
+    path: '/marker',
     component: Layout,
-    redirect: '/activity/index',
+    redirect: '/marker/index',
     meta: {
-      title: 'activity',
+      title: 'marker',
       icon: 'lock',
       roles: ['admin', 'editor'] // you can set roles in root nav
     },
     children: [
       {
-        path: 'activity',
-        component: () => import('@/views/activity/list'),
-        name: 'activityList',
-        meta: { title: 'activityList', icon: 'documentation', noCache: true }
+        path: 'marker',
+        component: () => import('@/views/marker/list'),
+        name: 'markerList',
+        meta: { title: 'markerList', icon: 'documentation', noCache: true }
       },
       {
         path: 'create',
-        component: () => import('@/views/activity/create'),
-        name: 'createActivity',
-        meta: { title: 'createActivity', icon: 'documentation', noCache: true }
+        component: () => import('@/views/marker/create'),
+        name: 'createMarker',
+        meta: { title: 'createMarker', icon: 'documentation', noCache: true }
       }
 
     ]

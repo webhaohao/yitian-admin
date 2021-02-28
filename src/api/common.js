@@ -82,16 +82,19 @@ export function getUserAgreement() {
   })
 }
 
-export function getActivityTypeAll() {
+export function getMarkers(type) {
   return request({
-    url: '/activityType/all',
-    method: 'get'
+    url: '/markers',
+    method: 'get',
+    params: {
+      type
+    }
   })
 }
 
-export function getActivityTypeByAdmin() {
+export function getMarkersType() {
   return request({
-    url: '/activityType/admin',
+    url: '/getMarkersType',
     method: 'get'
   })
 }

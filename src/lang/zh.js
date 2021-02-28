@@ -1,9 +1,9 @@
 export default {
   route: {
     dashboard: '首页',
-    activity: '活动',
-    activityList: '活动列表',
-    createActivity: '发布活动',
+    marker: 'Marker',
+    markerList: 'Marker列表',
+    createMarker: 'Marker添加/编辑',
     introduction: '简述',
     documentation: '文档',
     guide: '引导页',

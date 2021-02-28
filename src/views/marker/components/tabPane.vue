@@ -19,30 +19,10 @@
       </template>
     </el-table-column> -->
 
-      <el-table-column min-width="100px" label="活动名称">
+      <el-table-column min-width="100px" label="名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.title }}</span>
+          <span>{{ scope.row.detail? scope.row.detail.title:'---' }}</span>
         <!-- <el-tag>{{ scope.row.type }}</el-tag> -->
-        </template>
-      </el-table-column>
-      <el-table-column min-width="20px" label="人数">
-        <template slot-scope="scope">
-          <span>{{ scope.row.number }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column min-width="80px" label="地点">
-        <template slot-scope="scope">
-          <span>{{ scope.row.location }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column min-width="80px" label="开始时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.start_time }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column min-width="80px" label="结束时间">
-        <template slot-scope="scope">
-          <span>{{ scope.row.end_time }}</span>
         </template>
       </el-table-column>
       <!-- <el-table-column class-name="status-col" label="Status" width="110">
@@ -55,8 +35,8 @@
         label="操作"
         width="100">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handleClick(scope.row)">操作</el-button>
-          <el-button type="text" size="small">编辑</el-button>
+          <!-- <el-button type="text" size="small" @click="handleClick(scope.row)">操作</el-button> -->
+          <el-button type="text" size="small" @click="handleClick(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -82,7 +62,7 @@
 </template>
 
 <script>
-import { getActivitesByActivityTypeId, getActivityDetailById, createBanner } from '@/api/common'
+import { getMarkers } from '@/api/common'
 
 export default {
   filters: {
@@ -97,8 +77,8 @@ export default {
   },
   props: {
     type: {
-      type: String,
-      default: 'CN'
+      type: Number,
+      default: 1
     }
   },
   data() {
@@ -122,24 +102,24 @@ export default {
     async getList() {
       this.loading = true
       this.$emit('create') // for test
-      const { data } = await getActivitesByActivityTypeId(this.listQuery)
-      this.list = data
-      console.log(this.list)
+      this.list = await getMarkers(this.type)
     },
     async handleClick(row) {
       console.log(row)
-      const { id } = row
-      this.detail = await getActivityDetailById(id)
-      this.dialogFormVisible = true
-      console.log(this.detail)
+      this.$router.push({
+        name: 'createMarker',
+        query: {
+          id: row.id
+        }
+      })
     },
     async setTopBanner(id) {
-      const banner_id = id
-      const key_word = this.detail.id
-      const url = this.detail.main_img_url
-      await createBanner({ banner_id, key_word, url })
-      console.log(this.detail)
-      this.dialogFormVisible = false
+      // const banner_id = id
+      // const key_word = this.detail.id
+      // const url = this.detail.main_img_url
+      // await createBanner({ banner_id, key_word, url })
+      // console.log(this.detail)
+      // this.dialogFormVisible = false
     }
   }
 }
