@@ -158,3 +158,5 @@ export function getNewsDetailByCategoryId(params) {
     params
   })
 }
+
+//  api common
