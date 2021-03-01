@@ -92,6 +92,13 @@ export function getMarkers(type) {
   })
 }
 
+export function getMarkerById(id) {
+  return request({
+    url: `/marker/${id}`,
+    method: 'get'
+  })
+}
+
 export function getMarkersType() {
   return request({
     url: '/getMarkersType',

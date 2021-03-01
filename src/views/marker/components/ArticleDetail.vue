@@ -10,66 +10,36 @@
         </el-button>
         <el-button v-loading="loading" type="warning" @click="draftForm">草稿</el-button>
       </sticky>
-
       <div class="createPost-main-container">
         <el-row>
-
           <!-- <Warning /> -->
-          <el-radio-group v-model="postForm.activity_type_id" @change="activityTypeChange">
-            <el-radio v-for="(item,index) in activityType" :key="index" :label="item.id">{{ item.name }}</el-radio>
-          </el-radio-group>
+          <el-tabs v-model="activeName" style="margin:0 0 20px 0;" type="border-card">
+            <el-tab-pane v-for="item in tabMapOptions" :label="item.label" :key="item.key" :name="item.key">
+              <el-form-item style="margin-bottom: 40px;" prop="title">
+                <MDinput v-model="postForm.detail.title" :maxlength="100" name="name" required>
+                  标题
+                </MDinput>
+              </el-form-item>
+              <el-form-item prop="detail" style="margin-bottom: 30px;" label="活动详情:">
+                <el-col :span="24">
+                  <Tinymce ref="editor" v-model="postForm.detail.detail" :height="400" />
+                </el-col>
+              </el-form-item>
+            </el-tab-pane>
+          </el-tabs>
           <el-col :span="24">
-            <el-form-item style="margin-bottom: 40px;" prop="title">
-              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
-                标题
-              </MDinput>
+            <el-form-item label="类型">
+              <el-select v-model="postForm.type" placeholder="请选择类型" >
+                <el-option v-for="(item,index) in categories" :key="index" :label="item.name" :value="item.id"/>
+              </el-select>
             </el-form-item>
-            <el-form-item prop="image_uri" style="margin-bottom: 30px;" label="上传活动封面图片">
+            <el-form-item prop="image_uri" style="margin-bottom: 30px;" label="上传详情图片">
               <el-col :span="24">
                 <Upload v-model="postForm.main_img_url" @input="uploadImage"/>
               </el-col>
             </el-form-item>
-            <div class="postInfo-container">
-              <el-row>
-                <el-form-item label="活动时间">
-                  <el-col :span="6">
-                    <el-date-picker v-model="postForm.start_time" type="datetime" placeholder="选择日期" style="width: 100%;" format="yyyy-MM-dd HH:mm"/>
-                  </el-col>
-                  <el-col :span="1" class="line" style="text-align:center">-</el-col>
-                  <el-col :span="6">
-                    <el-date-picker v-model="postForm.end_time" type="datetime" placeholder="选择时间" style="width: 100%;" format="yyyy-MM-dd HH:mm"/>
-                  </el-col>
-                </el-form-item>
-                <el-form-item label="活动人数">
-                  <el-col :span="4">
-                    <el-input v-model="postForm.number"/>
-                  </el-col>
-                </el-form-item>
-                <el-form-item label="活动地点">
-                  <el-col :span="4">
-                    <el-input v-model="postForm.location"/>
-                  </el-col>
-                </el-form-item>
-                <el-form-item label="活动类型">
-                  <el-select v-model="postForm.category_id" placeholder="请选择活动类型" >
-                    <el-option v-for="(item,index) in categories" :key="index" :label="item.name" :value="item.id"/>
-                  </el-select>
-                </el-form-item>
-              </el-row>
-            </div>
           </el-col>
         </el-row>
-
-        <!-- <el-form-item style="margin-bottom: 40px;" label-width="45px" label="摘要:">
-          <el-input :rows="1" v-model="postForm.content_short" type="textarea" class="article-textarea" autosize placeholder="请输入内容"/>
-          <span v-show="contentShortLength" class="word-counter">{{ contentShortLength }}字</span>
-        </el-form-item> -->
-
-        <el-form-item prop="detail" style="margin-bottom: 30px;" label="活动详情:">
-          <el-col :span="24">
-            <Tinymce ref="editor" :height="400" v-model="postForm.detail" />
-          </el-col>
-        </el-form-item>
       </div>
     </el-form>
 
@@ -78,31 +48,30 @@
 
 <script>
 import Tinymce from '@/components/Tinymce'
-import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
+import Upload from '@/components/Upload/singleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
 import { parseTime } from '@/utils'
-import { fetchArticle } from '@/api/article'
-import { createActivity, getActivityTypeByAdmin, getCategoryByActivityTypeId } from '@/api/common'
+import { createActivity, getActivityTypeByAdmin, getMarkersType, getMarkerById } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
 
 const defaultForm = {
-  status: 'draft',
-  title: '', // 文章题目
-  detail: '', // 文章内容
-  // content_short: '', // 文章摘要
-  //  source_uri: '', // 文章外链
-  main_img_url: '', // 文章图片
-  start_time: undefined, // 前台展示时间
-  end_time: undefined,
-  location: '', // 地点
-  number: '',
-  category_id: '',
-  activity_type_id: 0,
-  platforms: ['a-platform']
+  // status: 'draft',
+  // title: '', // 文章题目
+  // detail: '', // 文章内容
+  // // content_short: '', // 文章摘要
+  // //  source_uri: '', // 文章外链
+  // main_img_url: '', // 文章图片
+  // start_time: undefined, // 前台展示时间
+  // end_time: undefined,
+  // location: '', // 地点
+  // number: '',
+  // category_id: '',
+  // activity_type_id: 0,
+  // platforms: ['a-platform']
 }
 
 export default {
@@ -155,7 +124,13 @@ export default {
       categories: [
 
       ],
-      activityType: []
+      activityType: [],
+      tabMapOptions: [
+        { label: 'China', key: 'CN' },
+        { label: 'USA', key: 'US' },
+        { label: 'Japan', key: 'JP' }
+      ],
+      activeName: 'CN'
     }
   },
   computed: {
@@ -173,15 +148,15 @@ export default {
     } else {
       this.postForm = Object.assign({}, defaultForm)
     }
-    this.getActivityTypeByAdmin()
+    this.getCatories()
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
     this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
-    async getCatories(activityTypeId) {
-      this.categories = await getCategoryByActivityTypeId({ activityTypeId })
+    async getCatories() {
+      this.categories = await getMarkersType()
     },
     async getActivityTypeByAdmin() {
       this.activityType = await getActivityTypeByAdmin()
@@ -190,21 +165,17 @@ export default {
         this.getCatories(this.postForm.activity_type_id)
       }
     },
-    async activityTypeChange(value) {
-      console.log(value)
-      this.getCatories(value)
-    },
     uploadImage(file) {
       // console.log(file)
       this.postForm.main_img_url = file.url
       console.log(this.postForm.main_img_url)
     },
     fetchData(id) {
-      fetchArticle(id).then(response => {
-        this.postForm = response.data
+      getMarkerById(id).then(response => {
+        this.postForm = response
         // Just for test
-        this.postForm.title += `   Article Id:${this.postForm.id}`
-        this.postForm.content_short += `   Article Id:${this.postForm.id}`
+        // this.postForm.title += `   Article Id:${this.postForm.id}`
+        // this.postForm.content_short += `   Article Id:${this.postForm.id}`
 
         // Set tagsview title
         this.setTagsViewTitle()
@@ -213,14 +184,13 @@ export default {
       })
     },
     setTagsViewTitle() {
-      const title = this.lang === 'zh' ? '编辑文章' : 'Edit Article'
-      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
-      this.$store.dispatch('updateVisitedView', route)
+      // const title = this.lang === 'zh' ? '编辑文章' : 'Edit Article'
+      // const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
+      // this.$store.dispatch('updateVisitedView', route)
     },
     submitForm() {
       this.postForm.start_time = parseTime(this.postForm.start_time, '{y}-{m}-{d} {h}:{i}')
       this.postForm.end_time = parseTime(this.postForm.end_time, '{y}-{m}-{d} {h}:{i}')
-      console.log(this.postForm)
       this.$refs.postForm.validate(async(valid) => {
         if (valid) {
           const result = await createActivity(this.postForm)
