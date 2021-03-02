@@ -44,19 +44,6 @@
       :total="1000"
       background
       layout="prev, pager, next"/> -->
-    <el-dialog :visible.sync="dialogFormVisible" title="活动详情">
-      <div class="demo-image__placeholder">
-        <div class="block">
-          <span>封面图片</span>
-          <img :src="detail.main_img_url" alt="">
-        </div>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-if="type=='4'" type="primary" @click="setTopBanner(3)">置顶体育圈banner图</el-button>
-        <el-button type="primary" @click="setTopBanner(1)">置顶banner图</el-button>
-      </div>
-    </el-dialog>
 
   </div>
 </template>

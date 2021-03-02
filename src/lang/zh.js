@@ -69,7 +69,7 @@ export default {
     i18n: '国际化',
     externalLink: '外链',
     about: '关于我们',
-    category: '活动类型'
+    category: 'Marker类型'
   },
   navbar: {
     logOut: '退出登录',

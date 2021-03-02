@@ -9,43 +9,53 @@
 <!--  -->
 <template>
   <div class="container">
-    <template>
-      <el-row :gutter="12">
-        <el-col v-for="(item,index) in activityTypeInfo " :span="8" :key="index">
-          <el-card shadow="always">
-            <div slot="header" class="clearfix">
-              <span>{{ item.name }}</span>
-            </div>
-            <el-row>
-              <el-col v-for="(tag,i) in item.items" :key="i" :span="8">
-                <el-tag
-                  :disable-transitions="false"
-                  closable
-                  @close="handleClose(tag,index)">
-                  {{ tag.name }}
-                </el-tag>
-              </el-col>
-            </el-row>
-            <el-input
-              v-if="item.inputVisible"
-              ref="saveTagInput"
-              v-model="inputValue"
-              class="input-new-tag"
-              size="small"
-              @keyup.enter.native="handleInputConfirm(index)"
-              @blur="handleInputConfirm(index)"
-            />
-            <el-button v-else class="button-new-tag" size="small" @click="showInput(item,index)">+ Add</el-button>
-          </el-card>
-        </el-col>
-      </el-row>
+    <el-table :data="markersType" border fit highlight-current-row style="width: 100%">
+      <el-table-column
+        v-loading="loading"
+        align="center"
+        label="id"
+        width="65"
+        element-loading-text="请给我点时间！">
+        <template slot-scope="scope">
+          <span>{{ scope.row.id }}</span>
+        </template>
+      </el-table-column>
 
-    </template>
+      <!-- <el-table-column width="180px" align="center" label="Date">
+      <template slot-scope="scope">
+        <span>{{ scope.row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+      </template>
+    </el-table-column> -->
+
+      <el-table-column min-width="100px" label="名称">
+        <template slot-scope="scope">
+          <div style="display:flex;align-items:center;">
+            <img :src="scope.row.icon" alt="" style="width:20px;">
+            &nbsp;&nbsp;
+            <span>{{ scope.row.name ? scope.row.name:'---' }}</span>
+          </div>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column class-name="status-col" label="Status" width="110">
+      <template slot-scope="scope">
+        <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+      </template>
+    </el-table-column> -->
+      <el-table-column
+        fixed="right"
+        label="操作"
+        width="100">
+        <template slot-scope="scope">
+          <!-- <el-button type="text" size="small" @click="handleClick(scope.row)">操作</el-button> -->
+          <el-button type="text" size="small" @click="handleClick(scope.row)">编辑</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </div>
 </template>
 
 <script>
-import { getActivityTypeCategory, createCategory, removeCategory } from '@/api/common'
+import { getMarkersType } from '@/api/common'
 export default {
 
   components: {},
@@ -54,7 +64,7 @@ export default {
       dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
       inputValue: '',
-      activityTypeInfo: [
+      markersType: [
       ]
     }
   },
@@ -62,12 +72,8 @@ export default {
   computed: {
   },
   async created() {
-    this.activityTypeInfo = await getActivityTypeCategory()
-    this.activityTypeInfo.map(item => {
-      item.inputVisible = false
-      return item
-    })
-    console.log(this.activityTypeInfo)
+    this.markersType = await getMarkersType()
+    console.log('this.markersType', this.markersType)
   },
   mounted() {},
 
@@ -75,12 +81,11 @@ export default {
     handleEdit(index, row) {
       console.log(index, row)
     },
-    async handleClose(tag, index) {
-      console.log(tag)
-      await removeCategory(tag.id)
-      console.log(this.activityTypeInfo[index].items.indexOf(tag))
-      this.activityTypeInfo[index].items.splice(this.activityTypeInfo[index].items.findIndex(item => item.name === tag.name), 1)
-    },
+    // async handleClose(tag, index) {
+    //   await removeCategory(tag.id)
+    //   console.log(this.activityTypeInfo[index].items.indexOf(tag))
+    //   this.activityTypeInfo[index].items.splice(this.activityTypeInfo[index].items.findIndex(item => item.name === tag.name), 1)
+    // },
 
     showInput(item, index) {
       item.inputVisible = true
@@ -89,25 +94,25 @@ export default {
         console.log(this.$refs.saveTagInput[0])
         this.$refs.saveTagInput[0].$refs.input.focus()
       })
-    },
-
-    async handleInputConfirm(index) {
-      const inputValue = this.inputValue
-      if (inputValue) {
-        const _index = this.activityTypeInfo[index].items.findIndex(item => item.name === inputValue)
-        if (_index !== -1) {
-          this.$message.error('错了哦，您输入的已存在！')
-          return false
-        } else {
-          await createCategory({ name: inputValue, activity_type_id: this.activityTypeInfo[index].id })
-          this.activityTypeInfo = await getActivityTypeCategory()
-          // this.activityTypeInfo[index].items.push({ name: inputValue })
-          console.log(this.activityTypeInfo)
-        }
-      }
-      this.inputVisible = false
-      this.inputValue = ''
     }
+
+    // async handleInputConfirm(index) {
+    //   const inputValue = this.inputValue
+    //   if (inputValue) {
+    //     const _index = this.activityTypeInfo[index].items.findIndex(item => item.name === inputValue)
+    //     if (_index !== -1) {
+    //       this.$message.error('错了哦，您输入的已存在！')
+    //       return false
+    //     } else {
+    //       await createCategory({ name: inputValue, activity_type_id: this.activityTypeInfo[index].id })
+    //       this.activityTypeInfo = await getActivityTypeCategory()
+    //       // this.activityTypeInfo[index].items.push({ name: inputValue })
+    //       console.log(this.activityTypeInfo)
+    //     }
+    //   }
+    //   this.inputVisible = false
+    //   this.inputValue = ''
+    // }
   }
 }
 
