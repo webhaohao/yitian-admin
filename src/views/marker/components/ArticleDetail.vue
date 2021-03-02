@@ -25,6 +25,19 @@
                   <Tinymce ref="editor" v-model="postForm.detail.detail" :height="400" />
                 </el-col>
               </el-form-item>
+              <el-form-item prop="sounds" style="margin-bottom: 30px;" label="上传声音介绍">
+                <el-col :span="24">
+                  <el-upload
+                    :show-file-list="false"
+                    :on-success="handleAvatarSuccess"
+                    :before-upload="beforeAvatarUpload"
+                    class="avatar-uploader"
+                    action="https://jsonplaceholder.typicode.com/posts/">
+                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <i v-else class="el-icon-plus avatar-uploader-icon"/>
+                  </el-upload>
+                </el-col>
+              </el-form-item>
             </el-tab-pane>
           </el-tabs>
           <el-col :span="24">
@@ -72,6 +85,11 @@ const defaultForm = {
   // category_id: '',
   // activity_type_id: 0,
   // platforms: ['a-platform']
+  detail: {
+    title: 'test',
+    detail: 'test'
+  },
+  type: 1
 }
 
 export default {
@@ -175,13 +193,11 @@ export default {
     fetchData(id) {
       getMarkerById(id).then(response => {
         this.postForm = response
-        // Just for test
-        // this.postForm.title += `   Article Id:${this.postForm.id}`
-        // this.postForm.content_short += `   Article Id:${this.postForm.id}`
 
         // Set tagsview title
         this.setTagsViewTitle()
       }).catch(err => {
+        this.postForm = defaultForm
         console.log(err)
       })
     },
@@ -241,6 +257,29 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 @import "~@/styles/mixin.scss";
+.avatar-uploader /deep/ .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader /deep/ .el-upload:hover {
+  border-color: #409EFF;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
 .createPost-container {
   position: relative;
   .createPost-main-container {
