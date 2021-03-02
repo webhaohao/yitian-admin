@@ -66,7 +66,7 @@ import Upload from '@/components/Upload/singleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
 import { parseTime } from '@/utils'
-import { createActivity, getActivityTypeByAdmin, getMarkersType, getMarkerById } from '@/api/common'
+import { createActivity, getMarkersType, getMarkerById } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -177,13 +177,6 @@ export default {
   methods: {
     async getCatories() {
       this.categories = await getMarkersType()
-    },
-    async getActivityTypeByAdmin() {
-      this.activityType = await getActivityTypeByAdmin()
-      if (this.activityType.length) {
-        this.postForm.activity_type_id = this.activityType[0].id
-        this.getCatories(this.postForm.activity_type_id)
-      }
     },
     uploadImage(file) {
       // console.log(file)
