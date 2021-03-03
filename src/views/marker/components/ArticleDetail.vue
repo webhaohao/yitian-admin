@@ -16,13 +16,13 @@
           <el-tabs v-model="activeName" style="margin:0 0 20px 0;" type="border-card">
             <el-tab-pane v-for="item in tabMapOptions" :label="item.label" :key="item.key" :name="item.key">
               <el-form-item style="margin-bottom: 40px;" prop="title">
-                <MDinput v-model="postForm.detail.title" :maxlength="100" name="name" required>
+                <MDinput v-model="postForm.detail[activeName].title" :maxlength="100" name="name" required>
                   标题
                 </MDinput>
               </el-form-item>
               <el-form-item prop="detail" style="margin-bottom: 30px;" label="活动详情:">
                 <el-col :span="24">
-                  <Tinymce ref="editor" v-model="postForm.detail.detail" :height="400" />
+                  <Tinymce ref="editor" v-model="postForm.detail[activeName].detail" :height="400" />
                 </el-col>
               </el-form-item>
               <el-form-item prop="sounds" style="margin-bottom: 30px;" label="上传声音介绍">
@@ -33,7 +33,7 @@
                     :before-upload="beforeAvatarUpload"
                     class="avatar-uploader"
                     action="https://jsonplaceholder.typicode.com/posts/">
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                    <video v-if="postForm.detail[activeName].sounds" :src="postForm.detail[activeName].sounds" class="avatar"/>
                     <i v-else class="el-icon-plus avatar-uploader-icon"/>
                   </el-upload>
                 </el-col>
@@ -65,8 +65,7 @@ import MDinput from '@/components/MDinput'
 import Upload from '@/components/Upload/singleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
-import { parseTime } from '@/utils'
-import { createActivity, getMarkersType, getMarkerById } from '@/api/common'
+import { updateMarker, getMarkersType, getMarkerById } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -87,7 +86,16 @@ const defaultForm = {
   // platforms: ['a-platform']
   detail: {
     title: 'test',
-    detail: 'test'
+    detail: 'test',
+    cn: {
+
+    },
+    en: {
+
+    },
+    hk: {
+
+    }
   },
   type: 1
 }
@@ -144,11 +152,11 @@ export default {
       ],
       activityType: [],
       tabMapOptions: [
-        { label: 'China', key: 'CN' },
-        { label: 'USA', key: 'US' },
-        { label: 'Japan', key: 'JP' }
+        { label: 'China', key: 'cn' },
+        { label: 'USA', key: 'en' },
+        { label: 'HK', key: 'hk' }
       ],
-      activeName: 'CN'
+      activeName: 'cn'
     }
   },
   computed: {
@@ -186,7 +194,13 @@ export default {
     fetchData(id) {
       getMarkerById(id).then(response => {
         this.postForm = response
-
+        console.log(this.postForm)
+        this.postForm.detail.cn = {
+          title: this.postForm.detail.title,
+          detail: this.postForm.detail.detail,
+          sounds: this.postForm.detail.sounds
+        }
+        console.log(this.postForm.detail)
         // Set tagsview title
         this.setTagsViewTitle()
       }).catch(err => {
@@ -200,11 +214,18 @@ export default {
       // this.$store.dispatch('updateVisitedView', route)
     },
     submitForm() {
-      this.postForm.start_time = parseTime(this.postForm.start_time, '{y}-{m}-{d} {h}:{i}')
-      this.postForm.end_time = parseTime(this.postForm.end_time, '{y}-{m}-{d} {h}:{i}')
       this.$refs.postForm.validate(async(valid) => {
         if (valid) {
-          const result = await createActivity(this.postForm)
+          const data = {
+            ...this.postForm,
+            detail: {
+              ...this.postForm.detail,
+              title: this.postForm.detail.cn.title,
+              detail: this.postForm.detail.cn.detail,
+              sounds: this.postForm.detail.cn.sounds
+            }
+          }
+          const result = await updateMarker(data)
           console.log(result)
           this.loading = true
           this.$notify({

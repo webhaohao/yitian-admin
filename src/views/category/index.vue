@@ -36,7 +36,7 @@
         width="100">
         <template slot-scope="scope">
           <!-- <el-button type="text" size="small" @click="handleClick(scope.row)">操作</el-button> -->
-          <el-button type="text" size="small" @click="handleClick(scope.row)">编辑</el-button>
+          <el-button type="text" size="small" @click="handleEditClick(scope.row)">编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -55,14 +55,14 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setTopBanner">提 交</el-button>
+        <el-button type="primary" @click="setMarkersType">提 交</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getMarkersType } from '@/api/common'
+import { getMarkersType, saveMarkerType } from '@/api/common'
 import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
 export default {
@@ -107,6 +107,20 @@ export default {
       // console.log(file)
       this.postForm.icon = file.url
       console.log(this.postForm.icon)
+    },
+    async setMarkersType() {
+      // console.log(this.postForm);
+      const url = 'http://yitian.happyhao.top'
+      const data = {
+        ...this.postForm,
+        icon: this.postForm.icon.replace(url, '')
+      }
+      await saveMarkerType(data)
+    },
+    handleEditClick(row) {
+      this.dialogFormVisible = true
+      this.postForm = row
+      // console.log(row);
     }
     // async handleInputConfirm(index) {
     //   const inputValue = this.inputValue

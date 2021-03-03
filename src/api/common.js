@@ -37,9 +37,9 @@ export function createNewsCategory(data) {
   })
 }
 
-export function createActivity(data) {
+export function updateMarker(data) {
   return request({
-    url: '/create_activity',
+    url: '/updateMarker',
     method: 'post',
     data
   })
@@ -103,6 +103,14 @@ export function getMarkersType() {
   return request({
     url: '/getMarkersType',
     method: 'get'
+  })
+}
+
+export function saveMarkerType(data) {
+  return request({
+    url: '/markersType/save',
+    method: 'post',
+    data
   })
 }
 
