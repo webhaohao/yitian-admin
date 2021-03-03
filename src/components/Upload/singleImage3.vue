@@ -53,7 +53,7 @@ export default {
       return this.value
     },
     uploadUrl() {
-      return `${process.env.BASE_API}/activity/upload_image`
+      return `${process.env.BASE_API}/common/upload`
     }
   },
   methods: {
@@ -140,7 +140,7 @@ export default {
     }
   }
   .image-app-preview {
-    width: 320px;
+    width: 190px;
     height: 180px;
     position: relative;
     border: 1px dashed #d9d9d9;

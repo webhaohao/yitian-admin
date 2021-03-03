@@ -43,21 +43,13 @@
     <el-dialog :visible.sync="dialogFormVisible" title="添加类型">
       <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
         <el-form-item style="margin-bottom: 40px;" prop="title">
-          <MDinput :maxlength="100" name="name" required>
+          <MDinput v-model="postForm.name" :maxlength="100" name="name" required>
             标题
           </MDinput>
         </el-form-item>
-        <el-form-item prop="sounds" name="icon" style="margin-bottom: 30px;" label="上传icon">
+        <el-form-item prop="icon" name="icon" style="margin-bottom: 30px;" label="上传icon">
           <el-col :span="24">
-            <el-upload
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/">
-              <img v-if="imageUrl" :src="imageUrl" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon"/>
-            </el-upload>
+            <Upload v-model="postForm.icon" @input="uploadImage"/>
           </el-col>
         </el-form-item>
       </el-form>
@@ -71,15 +63,20 @@
 
 <script>
 import { getMarkersType } from '@/api/common'
+import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
 export default {
 
-  components: { MDinput },
+  components: { MDinput, Upload },
   data() {
     return {
       dialogFormVisible: false,
       markersType: [
-      ]
+      ],
+      postForm: {
+        name: '',
+        icon: ''
+      }
     }
   },
 
@@ -105,8 +102,12 @@ export default {
         console.log(this.$refs.saveTagInput[0])
         this.$refs.saveTagInput[0].$refs.input.focus()
       })
+    },
+    uploadImage(file) {
+      // console.log(file)
+      this.postForm.icon = file.url
+      console.log(this.postForm.icon)
     }
-
     // async handleInputConfirm(index) {
     //   const inputValue = this.inputValue
     //   if (inputValue) {
@@ -129,29 +130,6 @@ export default {
 </script>
 
 <style lang='scss' scoped>
-  .avatar-uploader /deep/ .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader /deep/ .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 178px;
-    height: 178px;
-    line-height: 178px;
-    text-align: center;
-  }
-  .avatar {
-    width: 178px;
-    height: 178px;
-    display: block;
-  }
   .container{
       margin:30px;
   }
