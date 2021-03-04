@@ -27,16 +27,22 @@
               </el-form-item>
               <el-form-item prop="sounds" style="margin-bottom: 30px;" label="上传声音介绍">
                 <el-col :span="24">
-                  <el-upload
-                    :show-file-list="false"
-                    :on-success="handleAvatarSuccess"
-                    :before-upload="beforeAvatarUpload"
-                    class="avatar-uploader"
-                    action="https://jsonplaceholder.typicode.com/posts/">
-                    <video v-if="postForm.detail[activeName].sounds" :src="postForm.detail[activeName].sounds" class="avatar"/>
-                    <i v-else class="el-icon-plus avatar-uploader-icon"/>
-                  </el-upload>
+                  <el-col span="12">
+                    <el-upload
+                      :show-file-list="false"
+                      :on-success="handleAvatarSuccess"
+                      :before-upload="beforeAvatarUpload"
+                      :action="uploadSoundsUrl"
+                      class="avatar-uploader"
+                      name="files">
+                      <i class="el-icon-plus avatar-uploader-icon"/>
+                    </el-upload>
+                  </el-col>
+                  <el-col span="12">
+                    <video v-if="postForm.detail[activeName].sounds" :src="postForm.detail[activeName].sounds" controls/>
+                  </el-col>
                 </el-col>
+
               </el-form-item>
             </el-tab-pane>
           </el-tabs>
@@ -109,6 +115,7 @@ export default {
       default: false
     }
   },
+
   data() {
     const validateRequire = (rule, value, callback) => {
       if (value === '') {
@@ -165,6 +172,9 @@ export default {
     },
     lang() {
       return this.$store.getters.language
+    },
+    uploadSoundsUrl() {
+      return `${process.env.BASE_API}/common/uploadSound`
     }
   },
   created() {
@@ -213,16 +223,28 @@ export default {
       // const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
       // this.$store.dispatch('updateVisitedView', route)
     },
+
+    filterParamsHttp(item, type) {
+      const url = 'http://yitian.happyhao.top'
+      return {
+        ...item,
+        [type]: item[type].replace(url, '')
+      }
+    },
+
     submitForm() {
       this.$refs.postForm.validate(async(valid) => {
         if (valid) {
+          const url = 'http://yitian.happyhao.top'
           const data = {
             ...this.postForm,
             detail: {
               ...this.postForm.detail,
+              hk: this.filterParamsHttp(this.postForm.detail.hk, 'sounds'),
+              en: this.filterParamsHttp(this.postForm.detail.en, 'sounds'),
               title: this.postForm.detail.cn.title,
               detail: this.postForm.detail.cn.detail,
-              sounds: this.postForm.detail.cn.sounds
+              sounds: this.postForm.detail.cn.sounds.replace(url, '')
             }
           }
           const result = await updateMarker(data)
