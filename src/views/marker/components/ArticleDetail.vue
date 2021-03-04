@@ -30,7 +30,7 @@
                   <el-col span="12">
                     <el-upload
                       :show-file-list="false"
-                      :on-success="handleAvatarSuccess"
+                      :on-success="handleSoundsSuccess"
                       :before-upload="beforeAvatarUpload"
                       :action="uploadSoundsUrl"
                       class="avatar-uploader"
@@ -200,6 +200,9 @@ export default {
       // console.log(file)
       this.postForm.main_img_url = file.url
       console.log(this.postForm.main_img_url)
+    },
+    handleSoundsSuccess({ url }) {
+      this.postForm.detail[this.activeName].sounds = url
     },
     fetchData(id) {
       getMarkerById(id).then(response => {
