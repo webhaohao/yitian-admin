@@ -110,10 +110,9 @@ export default {
     },
     async setMarkersType() {
       // console.log(this.postForm);
-      const url = 'http://yitian.happyhao.top'
       const data = {
         ...this.postForm,
-        icon: this.postForm.icon.replace(url, '')
+        icon: this.postForm.icon
       }
       await saveMarkerType(data)
     },

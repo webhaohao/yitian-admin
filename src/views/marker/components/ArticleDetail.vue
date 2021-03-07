@@ -151,14 +151,23 @@ const defaultForm = {
   // activity_type_id: 0,
   // platforms: ['a-platform']
   items: [],
+  title_bg: '',
+  detail_bg: '',
+  iconPath: '',
   cn: {
-
+    title: '',
+    detail: '',
+    sounds: ''
   },
   en: {
-
+    title: '',
+    detail: '',
+    sounds: ''
   },
   hk: {
-
+    title: '',
+    detail: '',
+    sounds: ''
   },
   type: 1
 }
