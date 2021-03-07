@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { getMarkersType, saveMarkerType } from '@/api/common'
+import { getMarkersType, saveMarkerType, updateMarkerType } from '@/api/common'
 import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
 export default {
@@ -83,7 +83,7 @@ export default {
   computed: {
   },
   async created() {
-    this.markersType = await getMarkersType()
+    this.getMarkersType()
     // console.log('this.markersType', this.markersType)
   },
   mounted() {},
@@ -92,8 +92,15 @@ export default {
     handleEdit(index, row) {
       console.log(index, row)
     },
+    async getMarkersType() {
+      this.markersType = await getMarkersType()
+    },
     addMarkersType() {
       this.dialogFormVisible = true
+      this.postForm = {
+        name: '',
+        icon: ''
+      }
     },
     showInput(item, index) {
       item.inputVisible = true
@@ -110,15 +117,23 @@ export default {
     },
     async setMarkersType() {
       // console.log(this.postForm);
+      // console.log('this.postform',this.postForm);
+      const { id } = this.postForm
       const data = {
-        ...this.postForm,
-        icon: this.postForm.icon
+        ...this.postForm
       }
-      await saveMarkerType(data)
+      if (id) {
+        await updateMarkerType(data)
+      } else {
+        await saveMarkerType(data)
+      }
+      this.getMarkersType()
+      this.dialogFormVisible = false
+      // await saveMarkerType(data)
     },
     handleEditClick(row) {
       this.dialogFormVisible = true
-      this.postForm = row
+      this.postForm = JSON.parse(JSON.stringify(row))
       // console.log(row);
     }
     // async handleInputConfirm(index) {

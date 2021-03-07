@@ -122,6 +122,14 @@ export function saveMarkerType(data) {
   })
 }
 
+export function updateMarkerType(data) {
+  return request({
+    url: '/markersType/update',
+    method: 'post',
+    data
+  })
+}
+
 export function getActivityTypeCategory() {
   return request({
     url: '/activityType/category',
