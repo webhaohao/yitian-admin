@@ -28,12 +28,7 @@ export default {
   components: { tabPane },
   data() {
     return {
-      tabMapOptions: [
-        { label: 'China', key: 'CN' },
-        { label: 'USA', key: 'US' },
-        { label: 'Japan', key: 'JP' },
-        { label: 'Eurozone', key: 'EU' }
-      ],
+      tabMapOptions: [],
       activeName: 0,
       createdTimes: 0
     }

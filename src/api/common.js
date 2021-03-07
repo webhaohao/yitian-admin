@@ -37,6 +37,14 @@ export function createNewsCategory(data) {
   })
 }
 
+export function createMarker(data) {
+  return request({
+    url: '/createMarker',
+    method: 'post',
+    data
+  })
+}
+
 export function updateMarker(data) {
   return request({
     url: '/updateMarker',

@@ -21,7 +21,7 @@
 
       <el-table-column min-width="100px" label="名称">
         <template slot-scope="scope">
-          <span>{{ scope.row.detail? scope.row.detail.title:'---' }}</span>
+          <span>{{ scope.row[lang]? scope.row[lang].title:'---' }}</span>
         <!-- <el-tag>{{ scope.row.type }}</el-tag> -->
         </template>
       </el-table-column>
@@ -77,6 +77,7 @@ export default {
         id: this.type,
         sort: '+id'
       },
+      lang: 'cn',
       loading: false,
       dialogFormVisible: false,
       detail: {}

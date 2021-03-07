@@ -16,13 +16,13 @@
           <el-tabs v-model="activeName" style="margin:0 0 20px 0;" type="border-card">
             <el-tab-pane v-for="item in tabMapOptions" :label="item.label" :key="item.key" :name="item.key">
               <el-form-item style="margin-bottom: 40px;" prop="title">
-                <MDinput v-model="postForm.detail[activeName].title" :maxlength="100" name="name" required>
+                <MDinput v-model="postForm[activeName].title" :maxlength="100" name="name" required>
                   标题
                 </MDinput>
               </el-form-item>
               <el-form-item prop="detail" style="margin-bottom: 30px;" label="活动详情:">
                 <el-col :span="24">
-                  <Tinymce ref="editor" v-model="postForm.detail[activeName].detail" :height="400" />
+                  <Tinymce ref="editor" v-model="postForm[activeName].detail" :height="400" />
                 </el-col>
               </el-form-item>
               <el-form-item prop="sounds" style="margin-bottom: 30px;" label="上传声音介绍">
@@ -39,7 +39,7 @@
                     </el-upload>
                   </el-col>
                   <el-col span="12">
-                    <video v-if="postForm.detail[activeName].sounds" :src="postForm.detail[activeName].sounds" controls/>
+                    <video v-if="postForm[activeName].sounds" :src="postForm[activeName].sounds" controls/>
                   </el-col>
                 </el-col>
 
@@ -52,9 +52,69 @@
                 <el-option v-for="(item,index) in categories" :key="index" :label="item.name" :value="item.id"/>
               </el-select>
             </el-form-item>
+            <el-form-item label="经度">
+              <el-input v-model="postForm.longitude"/>
+            </el-form-item>
+            <el-form-item label="纬度">
+              <el-input v-model="postForm.latitude"/>
+            </el-form-item>
+            <el-form-item prop="title_bg" style="margin-bottom: 30px;" label="上传标题背景">
+              <el-col span="24">
+                <el-upload
+                  :action="uploadImageUrl"
+                  :show-file-list="false"
+                  :on-preview="handlePictureCardPreview"
+                  :on-success="handleIconTitleBgImage"
+                  name="files"
+                  class="avatar-uploader"
+                >
+                  <img v-if="postForm.title_bg" :src="postForm.title_bg" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"/>
+                </el-upload>
+              </el-col>
+            </el-form-item>
+            <el-form-item prop="title_bg" style="margin-bottom: 30px;" label="上传详情背景">
+              <el-col span="24">
+                <el-upload
+                  :action="uploadImageUrl"
+                  :show-file-list="false"
+                  :on-preview="handlePictureCardPreview"
+                  :on-success="handleIconDetailBgImage"
+                  name="files"
+                  class="avatar-uploader"
+                >
+                  <img v-if="postForm.detail_bg" :src="postForm.detail_bg" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"/>
+                </el-upload>
+              </el-col>
+            </el-form-item>
+            <el-form-item prop="iconPath" style="margin-bottom: 30px;" label="上传icon">
+              <el-col span="24">
+                <el-upload
+                  :action="uploadImageUrl"
+                  :show-file-list="false"
+                  :on-preview="handlePictureCardPreview"
+                  :on-success="handleIconImage"
+                  name="files"
+                  class="avatar-uploader"
+                >
+                  <img v-if="postForm.iconPath" :src="postForm.iconPath" class="avatar">
+                  <i v-else class="el-icon-plus avatar-uploader-icon"/>
+                </el-upload>
+              </el-col>
+            </el-form-item>
             <el-form-item prop="image_uri" style="margin-bottom: 30px;" label="上传详情图片">
-              <el-col :span="24">
-                <Upload v-model="postForm.main_img_url" @input="uploadImage"/>
+              <el-col span="24">
+                <el-upload
+                  :action="uploadImageUrl"
+                  :on-preview="handlePictureCardPreview"
+                  :file-list="detailFileList"
+                  :on-success="handleDetailImageList"
+                  :on-remove="handleDetailImageRemove"
+                  list-type="picture-card"
+                  name="files">
+                  <i class="el-icon-plus"/>
+                </el-upload>
               </el-col>
             </el-form-item>
           </el-col>
@@ -71,7 +131,7 @@ import MDinput from '@/components/MDinput'
 import Upload from '@/components/Upload/singleImage3'
 import Sticky from '@/components/Sticky' // 粘性header组件
 import { validateURL } from '@/utils/validate'
-import { updateMarker, getMarkersType, getMarkerById } from '@/api/common'
+import { updateMarker, getMarkersType, getMarkerById, createMarker } from '@/api/common'
 import { userSearch } from '@/api/remoteSearch'
 import Warning from './Warning'
 import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from './Dropdown'
@@ -90,18 +150,15 @@ const defaultForm = {
   // category_id: '',
   // activity_type_id: 0,
   // platforms: ['a-platform']
-  detail: {
-    title: 'test',
-    detail: 'test',
-    cn: {
+  items: [],
+  cn: {
 
-    },
-    en: {
+  },
+  en: {
 
-    },
-    hk: {
+  },
+  hk: {
 
-    }
   },
   type: 1
 }
@@ -167,16 +224,45 @@ export default {
     }
   },
   computed: {
+    detailFileList: {
+      get() {
+        const { items } = this.postForm
+        if (items.length) {
+          return items.map(item => (
+            {
+              name: item.marker_id,
+              url: item.path
+            }
+          ))
+        }
+        return []
+      },
+      set(values) {
+        console.log(values)
+        // return values
+      }
+
+    },
     contentShortLength() {
       return this.postForm.content_short.length
     },
     lang() {
       return this.$store.getters.language
     },
+    uploadImageUrl() {
+      return `${process.env.BASE_API}/common/upload`
+    },
     uploadSoundsUrl() {
       return `${process.env.BASE_API}/common/uploadSound`
     }
   },
+  watch: {
+    activeName(val) {
+      const index = this.tabMapOptions.findIndex(item => item.key === val)
+      this.$refs.editor[index].setContent(this.postForm[val].detail)
+    }
+  },
+
   created() {
     if (this.isEdit) {
       const id = this.$route.query && this.$route.query.id
@@ -196,24 +282,47 @@ export default {
     async getCatories() {
       this.categories = await getMarkersType()
     },
-    uploadImage(file) {
-      // console.log(file)
-      this.postForm.main_img_url = file.url
-      console.log(this.postForm.main_img_url)
+    handleDetailImageRemove(file, fileList) {
+      console.log('files', fileList)
+      const id = this.$route.query && this.$route.query.id
+      this.postForm.items = fileList.map(item => {
+        return {
+          marker_id: id || null,
+          path: item.url
+        }
+      })
+    },
+    handleDetailImageList(response, file, fileList) {
+      const id = this.$route.query && this.$route.query.id
+      this.postForm.items = fileList.map(item => {
+        if (item.response) {
+          return {
+            marker_id: id || null,
+            path: item.response.url
+          }
+        }
+        return {
+          marker_id: id || null,
+          path: item.url
+        }
+      })
+    },
+    handleIconDetailBgImage(file) {
+      this.postForm.detail_bg = file.url
+    },
+    handleIconTitleBgImage(file) {
+      this.postForm.title_bg = file.url
+    },
+    handleIconImage(file) {
+      this.postForm.iconPath = file.url
     },
     handleSoundsSuccess({ url }) {
-      this.postForm.detail[this.activeName].sounds = url
+      this.postForm[this.activeName].sounds = url
     },
     fetchData(id) {
       getMarkerById(id).then(response => {
         this.postForm = response
         console.log(this.postForm)
-        this.postForm.detail.cn = {
-          title: this.postForm.detail.title,
-          detail: this.postForm.detail.detail,
-          sounds: this.postForm.detail.sounds
-        }
-        console.log(this.postForm.detail)
         // Set tagsview title
         this.setTagsViewTitle()
       }).catch(err => {
@@ -227,31 +336,19 @@ export default {
       // this.$store.dispatch('updateVisitedView', route)
     },
 
-    filterParamsHttp(item, type) {
-      const url = 'http://yitian.happyhao.top'
-      return {
-        ...item,
-        [type]: item[type].replace(url, '')
-      }
-    },
-
     submitForm() {
       this.$refs.postForm.validate(async(valid) => {
         if (valid) {
-          const url = 'http://yitian.happyhao.top'
           const data = {
-            ...this.postForm,
-            detail: {
-              ...this.postForm.detail,
-              hk: this.filterParamsHttp(this.postForm.detail.hk, 'sounds'),
-              en: this.filterParamsHttp(this.postForm.detail.en, 'sounds'),
-              title: this.postForm.detail.cn.title,
-              detail: this.postForm.detail.cn.detail,
-              sounds: this.postForm.detail.cn.sounds.replace(url, '')
-            }
+            ...this.postForm
           }
-          const result = await updateMarker(data)
-          console.log(result)
+          console.log('data', data)
+          const id = this.$route.query && this.$route.query.id
+          if (id) {
+            await updateMarker(data)
+          } else {
+            await createMarker(data)
+          }
           this.loading = true
           this.$notify({
             title: '成功',
