@@ -167,14 +167,24 @@ export const asyncRouterMap = [
     ]
   },
   {
-    path: '/about',
+    path: '/banner',
     component: Layout,
+    meta: {
+      title: 'banner',
+      icon: 'lock'
+    },
     children: [
       {
         path: 'index',
-        component: () => import('@/views/about/index'),
-        name: 'About',
-        meta: { title: 'about', icon: 'icon', noCache: true }
+        component: () => import('@/views/banner/index'),
+        name: 'Banner',
+        meta: { title: '首页banner', icon: 'icon', noCache: true }
+      },
+      {
+        path: 'adbanner',
+        component: () => import('@/views/banner/adBanner'),
+        name: 'adBanner',
+        meta: { title: '广告位banner', icon: 'icon', noCache: true }
       }
     ]
   },
