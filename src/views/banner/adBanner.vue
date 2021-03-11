@@ -9,9 +9,9 @@
 <!--  -->
 <template>
   <div class="container">
-    <el-button style="margin:20px 0px" type="success" @click="addMarkersType">添加banner</el-button>
-    <el-table :data="markersType" border fit highlight-current-row style="width: 100%">
-      <el-table-column
+    <el-button style="margin:20px 0px" type="success" @click="addBanner">添加banner</el-button>
+    <el-table :data="banners" border fit highlight-current-row style="width: 100%">
+      <!-- <el-table-column
         v-loading="loading"
         align="center"
         label="id"
@@ -20,13 +20,12 @@
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
-      </el-table-column>
-      <el-table-column min-width="100px" label="名称">
+      </el-table-column> -->
+      <el-table-column min-width="100px" label="banner图片">
         <template slot-scope="scope">
           <div style="display:flex;align-items:center;">
-            <img :src="scope.row.icon" alt="" style="width:20px;">
+            <img :src="scope.row.path" alt="" style="width:120px;">
             &nbsp;&nbsp;
-            <span>{{ scope.row.name ? scope.row.name:'---' }}</span>
           </div>
         </template>
       </el-table-column>
@@ -40,29 +39,29 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog :visible.sync="dialogFormVisible" title="添加广告位banner">
+    <el-dialog :visible.sync="dialogFormVisible" title="添加banner">
       <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
         <el-form-item style="margin-bottom: 40px;" prop="title">
-          <MDinput v-model="postForm.name" :maxlength="100" name="name" required>
-            跳转url
+          <MDinput v-model="postForm.url" :maxlength="100" name="url" required>
+            跳转链接
           </MDinput>
         </el-form-item>
-        <el-form-item prop="icon" name="icon" style="margin-bottom: 30px;" label="上传banner图">
+        <el-form-item prop="path" name="path" style="margin-bottom: 30px;" label="上传banner图片">
           <el-col :span="24">
-            <Upload v-model="postForm.icon" @input="uploadImage"/>
+            <Upload v-model="postForm.path" @input="uploadImage"/>
           </el-col>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setMarkersType">提 交</el-button>
+        <el-button type="primary" @click="setBanner">提 交</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getMarkersType, saveMarkerType, updateMarkerType } from '@/api/common'
+import { getAdBanner, addAdBanner, updateAdBanner } from '@/api/common'
 import Upload from '@/components/Upload/singleImage3'
 import MDinput from '@/components/MDinput'
 export default {
@@ -71,11 +70,11 @@ export default {
   data() {
     return {
       dialogFormVisible: false,
-      markersType: [
+      banners: [
       ],
       postForm: {
-        name: '',
-        icon: ''
+        path: '',
+        url: ''
       }
     }
   },
@@ -83,7 +82,7 @@ export default {
   computed: {
   },
   async created() {
-    this.getMarkersType()
+    this.getAdBanner()
     // console.log('this.markersType', this.markersType)
   },
   mounted() {},
@@ -92,14 +91,15 @@ export default {
     handleEdit(index, row) {
       console.log(index, row)
     },
-    async getMarkersType() {
-      this.markersType = await getMarkersType()
+    async getAdBanner() {
+      this.banners = await getAdBanner()
+      console.log(this.banners)
     },
-    addMarkersType() {
+    addBanner() {
       this.dialogFormVisible = true
       this.postForm = {
-        name: '',
-        icon: ''
+        path: '',
+        url: ''
       }
     },
     showInput(item, index) {
@@ -112,10 +112,9 @@ export default {
     },
     uploadImage(file) {
       // console.log(file)
-      this.postForm.icon = file.url
-      console.log(this.postForm.icon)
+      this.postForm.path = file.url
     },
-    async setMarkersType() {
+    async setBanner() {
       // console.log(this.postForm);
       // console.log('this.postform',this.postForm);
       const { id } = this.postForm
@@ -123,11 +122,11 @@ export default {
         ...this.postForm
       }
       if (id) {
-        await updateMarkerType(data)
+        await updateAdBanner(data)
       } else {
-        await saveMarkerType(data)
+        await addAdBanner(data)
       }
-      this.getMarkersType()
+      this.getAdBanner()
       this.dialogFormVisible = false
       // await saveMarkerType(data)
     },
@@ -177,3 +176,4 @@ export default {
     vertical-align: bottom;
   }
 </style>
+

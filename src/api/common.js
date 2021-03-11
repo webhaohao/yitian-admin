@@ -130,6 +130,50 @@ export function updateMarkerType(data) {
   })
 }
 
+export function getTopBanner() {
+  return request({
+    url: '/getTopBanner'
+  })
+}
+
+export function addTopBanner(data) {
+  return request({
+    url: '/addTopBanner',
+    data,
+    method: 'post'
+  })
+}
+
+export function updateTopBanner(data) {
+  return request({
+    url: '/updateTopBanner',
+    data,
+    method: 'post'
+  })
+}
+
+export function getAdBanner() {
+  return request({
+    url: '/getAdBanner'
+  })
+}
+
+export function addAdBanner(data) {
+  return request({
+    url: '/addAdBanner',
+    data,
+    method: 'post'
+  })
+}
+
+export function updateAdBanner(data) {
+  return request({
+    url: '/updateAdBanner',
+    data,
+    method: 'post'
+  })
+}
+
 export function getActivityTypeCategory() {
   return request({
     url: '/activityType/category',
