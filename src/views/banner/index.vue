@@ -113,8 +113,6 @@ export default {
       this.postForm.path = file.url
     },
     async setBanner() {
-      // console.log(this.postForm);
-      // console.log('this.postform',this.postForm);
       const { id } = this.postForm
       const data = {
         ...this.postForm
